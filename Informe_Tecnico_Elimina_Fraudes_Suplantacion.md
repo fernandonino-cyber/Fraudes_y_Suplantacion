@@ -12,6 +12,23 @@ El proceso está compuesto por:
 - **Procedimiento de Eliminación:** Un procedimiento centralizado que ejecuta las sentencias DELETE.
 - **Paquetes ODI:** Diferentes paquetes que orquestan la eliminación para cada área funcional.
 
+### 3.1. Diagrama de Flujo del Proceso
+```mermaid
+graph TD
+    A[Inicio: Paquete ODI] --> B[Captura de Variables: Periodo, Tabla, Campo Producto]
+    B --> C{¿Existen registros en STG_FRAUDES_SUPLANTACION?}
+    C -- No --> End[Fin del Proceso]
+    C -- Sí --> D{Tipo de Exclusión}
+
+    D -- "Tipo 1 (Producto)" --> E[Borrado por NUMERO_PRODUCTO en ODS_TRIBUTARIO]
+    D -- "Tipo 3 (Cliente/ID)" --> F[Homologación de TIPO_ID con STG_EXO_PAR_HOMOLOGACION]
+    F --> G[Borrado por TIPO_ID y NUMERO_ID en ODS_TRIBUTARIO]
+
+    E --> H[Commit]
+    G --> H
+    H --> End
+```
+
 ## 4. Modelo de Datos
 ### 4.1. Tablas de Origen (Control de Fraudes)
 - **`STG_TRIBUTARIO.STG_FRAUDES_SUPLANTACION`**: Contiene el listado de productos e identificaciones a excluir.
